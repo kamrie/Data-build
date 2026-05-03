@@ -1,3 +1,4 @@
+
 // Regex patterns
 const emailRegX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 // let emailRegX = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
@@ -17,8 +18,10 @@ const phone = document.getElementById('phone');
 const referralUsername= document.getElementById('ref-username');
 const password = document.getElementById('password'); 
 const rePassword = document.getElementById('re-password');
-const address = document.getElementById('address')
+// const address = document.getElementById('address')
 const termsCheckbox = document.getElementById('termsCheckbox');
+const signUpButton = document.getElementById('signUpButton');
+
 
 
 termsCheckbox.addEventListener('change', () => {
@@ -47,7 +50,7 @@ function showError(message) {
 document.getElementById('signUpForm').addEventListener('submit', async function (e) {
   e.preventDefault();  // Prevent default form submission
 
-  if(username.value === ""||fname.value === "" || email.value === "" || phone.value ==="" || password.value === "" || rePassword.value === "" || address.value === ""){
+  if(username.value === ""||fname.value === "" || email.value === "" || phone.value ==="" || password.value === "" || rePassword.value === ""){
     // errorParagraph.textContent = "Please validate all fields😊"
       showError("Please validate all fields😊")
         
@@ -57,8 +60,7 @@ document.getElementById('signUpForm').addEventListener('submit', async function 
     } else if(!emailRegX.test(email.value)){
         console.log("Invalid email:", email.value); // Debugging output
         // errorParagraph.textContent = " Enter a valid email address."
-         showError("Enter a valid email address.")
-       
+         showError("Enter a valid email address.")       
     }else if(!passwordRegX.test(password.value)){
         console.log("password should have atleast one UPPERCASE,one LOWERCASE AND 8 characters:", password.value); // Debugging output
         // errorParagraph.textContent = "password should have atleast one UPPERCASE,one LOWERCASE AND 8 characters"
@@ -69,7 +71,7 @@ document.getElementById('signUpForm').addEventListener('submit', async function 
         // errorParagraph.textContent = "Invalid phone number";
         showError("Invalid phone number")
       
-      }else {
+    }else {
             const signUpData = {
                 username: username.value,
                 fname:  fname.value,
@@ -78,9 +80,9 @@ document.getElementById('signUpForm').addEventListener('submit', async function 
                 referralUsername: referralUsername.value,
                 password : password.value,
                 // rePassword: rePassword.value,
-                address: address.value,
-                termsCheckbox:termsCheckbox.value,
-                // signUpButton: signUpButton .value
+                // address: address.value,
+                termsCheckbox:termsCheckbox.checked,
+                // signUpButton: signUpButton.value
             } 
                 console.log("signUpData", signUpData)
                 console.log("Form submitted successfully")
