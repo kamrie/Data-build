@@ -64,16 +64,6 @@ function showError(message) {
             console.log("Protected route:", protectedData);
 
             
-        // 🔐 TEST PROTECTED ROUTE
-            const walletRes = await fetch('http://localhost:3500/api/user/wallet', {
-                method: 'GET',
-                credentials: 'include'
-                });
-  
-                const walletData = await walletRes.json();
-                console.log("Wallet:", walletData.wallet);
-         
-
 
             alert("Login successful!.");
             document.getElementById('loginForm').reset(); // Reset the form

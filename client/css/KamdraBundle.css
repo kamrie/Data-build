@@ -15,7 +15,7 @@ nav{
 background-color: white;
 }
 nav h1{
-    color:rgb(26, 26, 248);
+    color:rgb(255, 191, 0);
     font-size: 30px;
 }
 .nav-links ul{
@@ -31,7 +31,7 @@ nav h1{
  font-size: 17px;
 }   
 .nav-links ul a:hover{
-    background: linear-gradient(90deg, #6d73b3, rgb(13, 8, 87)); /* Define your gradient here */
+    background: linear-gradient(90deg, rgb(255, 191, 0), rgb(207, 191, 12)); /* Define your gradient here */
     -webkit-background-clip: text; /* Clip the background to the text */
     -webkit-text-fill-color: transparent; /* Make the text transparent */
  font-weight: bold;
@@ -69,13 +69,13 @@ color: white;
 
 @keyframes colorTransition {
     0% {
-        background-color:rgb(26, 26, 248) ;
+        background-color: rgb(241, 183, 7) ;
         color: white;
       border-color: #2b4a71;
     }
     100% {
       background-color: #ced1d5;
-      color: #2b4a71;
+      color: black;
       border-color: #e0e4eb;
     }
   }
@@ -110,8 +110,8 @@ color: white;
 }
 .intro-para a {
     text-decoration: none;
-    background-color:  rgb(10, 10, 161); 
-    color: white;
+    background-color:   rgb(241, 183, 7); 
+    color: black;
     padding: 19px;
     display: flex;
     justify-content: center;
@@ -127,8 +127,8 @@ gap: 30px;
 }
 .intro-services i{
     font-size: 12px;
-    background-color:rgb(26, 26, 248);
-    color: white;
+    background-color: rgb(241, 183, 7);
+    color: black;
     padding: 3px;
     border-radius: 20px;
 }

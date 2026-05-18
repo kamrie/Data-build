@@ -34,7 +34,7 @@ let typed = new Typed('.typing-effect',{
   strings: [
 
     "A LIFETIME OFFER" ,
-        "KAMDRA BUNDLES",
+        "KAMDRA PAY",
   
   ], 
   backSpeed: "9", 

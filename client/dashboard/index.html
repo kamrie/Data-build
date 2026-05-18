@@ -1,125 +1,811 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <title>KAMDRA BUNDLE: Buy Data, Airtime, Pay bills </title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.lineicons.com/5.0/lineicons.css" />
-    <link rel="stylesheet" href="/client/css/dashboard.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KamPay — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../../src/output.css"/>
+  <style>
+    body { font-family: 'Syne', sans-serif; }
+    .mono { font-family: 'Space Mono', monospace; }
+ 
+    /* Sidebar slide */
+    #sidebar { transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    #sidebar.closed { transform: translateX(-100%); }
+ 
+    /* Ticker */
+    .ticker-inner {
+      display: inline-block;
+      animation: tickerMove 30s linear infinite;
+    }
+    @keyframes tickerMove {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+ 
+    /* Wallet card glow orbs */
+    .orb-1 {
+      position:absolute; top:-80px; right:-60px;
+      width:260px; height:260px; border-radius:50%;
+      background:radial-gradient(circle,rgba(255,214,0,.13),transparent 70%);
+      filter:blur(55px); pointer-events:none;
+      animation:orbF 9s ease-in-out infinite;
+    }
+    .orb-2 {
+      position:absolute; bottom:-60px; left:-50px;
+      width:180px; height:180px; border-radius:50%;
+      background:radial-gradient(circle,rgba(255,214,0,.07),transparent 70%);
+      filter:blur(55px); pointer-events:none;
+      animation:orbF 13s ease-in-out infinite reverse;
+    }
+    @keyframes orbF {
+      0%,100% { transform:translate(0,0); }
+      50%      { transform:translate(12px,-16px); }
+    }
+ 
+    /* Skeleton bar */
+    .sk-bar {
+      display:block; width:180px; height:42px; border-radius:8px;
+      background:linear-gradient(90deg,#222 25%,#2d2d2d 50%,#222 75%);
+      background-size:300% 100%;
+      animation:shimmer 1.4s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position:100% 50%; }
+      100% { background-position:-100% 50%; }
+    }
+ 
+    /* Pulse dot */
+    .pulse { animation:pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.2} }
+ 
+    /* Card entrance */
+    .card-enter {
+      animation:cardUp .55s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes cardUp {
+      from { opacity:0; transform:translateY(18px) scale(.97); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+ 
+    /* Spin */
+    .spin { animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+ 
+    /* Toast slide-in */
+    #toast {
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0) !important;
+      opacity: 1 !important;
+    }
+ 
+    /* Modal */
+    #fundModal, #csModal {
+      transition: opacity .25s ease;
+    }
+    #fundModal .modal-card,
+    #csModal   .modal-card {
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+    }
+ 
+    /* Scrollbar */
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:#111; }
+    ::-webkit-scrollbar-thumb { background:#2d2d2d; border-radius:2px; }
+    ::-webkit-scrollbar-thumb:hover { background:#FFD600; }
+  </style>
 </head>
-<body>
-
-    
-    <div class="wrapper">
-        <aside id="sidebar">
-            <div class="d-flex">
-                <button id="toggle-btn" type="button">
-                    <i class="lni lni-arrow-left"></i>` 
-                </button>
-                <div class="sidebar-logo">
-                    <a href="#">CodzSword</a>
-                </div>
-            </div>
-            <ul class="sidebar-nav">
-                 <li class="sidebar-item">
-                     <a href="" class="sidebar-link">
-                        <i class="lni lni-user-4"></i>
-                        <span>Profile</span>
-                     </a>
-                 </li>
-                 <li class="sidebar-item">
-                    <a href="" class="sidebar-link">
-                       <i class="lni lni-agenda-4"></i>
-                       <span>Task</span>
-                    </a>
-                 </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link has-dropdown collapsed"  data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                        <i class="lni lni-shield-2-check"></i>
-                        <span>Auth</span>
-                    </a>
-                    <ul id="auth" class="sidebar-dropdown list-unstyled collapse"  data-bs-parent="#sidebar">
-                        <li class="sidebar-item">
-                             <a href="#" class="sidebar-link">Login</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">Register</a>
-                       </li>
-                    </ul>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link has-dropdown collapsed" data-bs-toggle="collapse" data-bs-target="#multi" aria-expanded="false" aria-controls="multi">
-                        <i class="lni lni-layout-9"></i>
-                        <span>Multi Level</span>
-                    </a>
-                 <ul id="multi" class="sidebar-dropdown list-unstyled collapse"  data-bs-parent="#sidebar">
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link  collapsed" data-bs-toggle="collapse" data-bs-target="#multi-two" aria-expanded="false" aria-controls="multi-two">
-                           Two Links
-                        </a>
-                        <ul id="multi-two" class="sidebar-dropdown list-unstyled collapse">
-                            <li class="sidebar-item">
-                                <a href="" class="sidebar-link" >Link 1</a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link" >Link 2</a>
-                            </li>
-                        </ul>
-                    </li>
-                 </ul>
-                </li>
-                <li class="sidebar-item">
-                    <a href="" class="sidebar-link">
-                       <i class="lni lni-popup"></i>
-                       <span>Notificaton</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="" class="sidebar-link">
-                       <i class="lni lni-cog"></i>
-                       <span>Setting</span>
-                    </a>
-                </li>
-            </ul>
-            <div class="sidebar-footer">
-                <a href="#" class="sidebar-link">
-                    <i class="lni lni-exit"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </aside>
-
-        <div class="main p-3">
-            <div class="text-center">
-                <h1>
-                    Welcome to KAMDRABUNDLE.com
-                </h1>
-                
-            </div>
-
-        </div>
+<body class="bg-[#090909] text-[#F2F2ED] flex overflow-x-hidden min-h-screen">
+ 
+<!-- ════════════════════════════════
+     TOAST
+════════════════════════════════ -->
+<div id="toast"
+     class="fixed top-5 left-1/2 z-9999
+            -translate-x-1/2 -translate-y-[120%]
+            opacity-0 pointer-events-none
+            min-w-[240px] max-w-[88vw]
+            flex items-center gap-3 px-5 py-3
+            rounded-2xl mono text-xs shadow-2xl">
+</div>
+ 
+<!-- ════════════════════════════════
+     FUND WALLET MODAL
+════════════════════════════════ -->
+<div id="fundModal"
+     class="fixed inset-0 bg-black/80 backdrop-blur-md z-[500]
+            flex items-end sm:items-center justify-center
+            opacity-0 pointer-events-none">
+ 
+  <div class="modal-card bg-[#111] border border-[#232323]
+              rounded-t-3xl sm:rounded-3xl
+              w-full max-w-[460px] translate-y-10">
+ 
+    <!-- header -->
+    <div class="flex items-center gap-3 px-5 pt-6 pb-4 border-b border-[#232323]">
+      <div class="w-10 h-10 rounded-xl
+                  bg-[rgba(255,214,0,.07)] border border-[rgba(255,214,0,.12)]
+                  grid place-items-center text-[#FFD600] shrink-0">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-[15px] font-bold">Fund Wallet</h2>
+        <p class="mono text-[10px] text-[#888]">Add money to your KamdraPay balance</p>
+      </div>
+      <button id="closeFundModal"
+              class="ml-auto w-8 h-8 rounded-lg bg-[#232323] border border-[#2d2d2d]
+                     text-[#888] grid place-items-center
+                     hover:bg-[#FF3D57] hover:border-[#FF3D57] hover:text-white transition-all">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
-
-
-
+ 
+    <!-- body -->
+    <div class="px-5 py-4 flex flex-col gap-4">
+ 
+      <!-- quick amount chips -->
+      <div class="flex flex-wrap gap-2" id="qaRow">
+        <button class="qa-chip mono text-[11px] px-3 py-2 rounded-full
+                       border border-[#2d2d2d] bg-[#191919] text-[#F2F2ED]
+                       hover:bg-[#FFD600] hover:border-[#FFD600] hover:text-black
+                       hover:font-bold transition-all" data-v="500">₦500</button>
+        <button class="qa-chip mono text-[11px] px-3 py-2 rounded-full
+                       border border-[#2d2d2d] bg-[#191919] text-[#F2F2ED]
+                       hover:bg-[#FFD600] hover:border-[#FFD600] hover:text-black
+                       hover:font-bold transition-all" data-v="1000">₦1,000</button>
+        <button class="qa-chip mono text-[11px] px-3 py-2 rounded-full
+                       border border-[#2d2d2d] bg-[#191919] text-[#F2F2ED]
+                       hover:bg-[#FFD600] hover:border-[#FFD600] hover:text-black
+                       hover:font-bold transition-all" data-v="2000">₦2,000</button>
+        <button class="qa-chip mono text-[11px] px-3 py-2 rounded-full
+                       border border-[#2d2d2d] bg-[#191919] text-[#F2F2ED]
+                       hover:bg-[#FFD600] hover:border-[#FFD600] hover:text-black
+                       hover:font-bold transition-all" data-v="5000">₦5,000</button>
+        <button class="qa-chip mono text-[11px] px-3 py-2 rounded-full
+                       border border-[#2d2d2d] bg-[#191919] text-[#F2F2ED]
+                       hover:bg-[#FFD600] hover:border-[#FFD600] hover:text-black
+                       hover:font-bold transition-all" data-v="10000">₦10,000</button>
+        <button class="qa-chip mono text-[11px] px-3 py-2 rounded-full
+                       border border-[#2d2d2d] bg-[#191919] text-[#F2F2ED]
+                       hover:bg-[#FFD600] hover:border-[#FFD600] hover:text-black
+                       hover:font-bold transition-all" data-v="20000">₦20,000</button>
+      </div>
+ 
+      <!-- amount input — ID "amount" matches your existing JS -->
+      <div class="flex flex-col gap-1.5">
+        <label class="mono text-[10px] text-[#888] uppercase tracking-wider">
+          Custom amount
+        </label>
+        <div class="flex items-center bg-[#191919] border border-[#2d2d2d] rounded-xl
+                    overflow-hidden focus-within:border-[#FFD600]
+                    focus-within:shadow-[0_0_0_3px_rgba(255,214,0,.07)] transition-all">
+          <span class="px-3 text-xl font-bold text-[#FFD600] border-r border-[#2d2d2d]">₦</span>
+          <input id="amount" type="number" min="100" max="1000000"
+                 placeholder="0.00" autocomplete="off"
+                 class="flex-1 px-4 py-3 bg-transparent outline-none
+                        text-white text-xl font-bold placeholder-[#2d2d2d]"/>
+        </div>
+        <span class="mono text-[10px] text-[#555]">Minimum ₦100 · Maximum ₦1,000,000</span>
+      </div>
+ 
+      <!-- fee preview -->
+      <div class="flex justify-between mono text-[11px] text-[#888] py-0.5">
+        <span>Processing fee (1.5%)</span>
+        <span id="feeDisp">₦0.00</span>
+      </div>
+      <div class="flex justify-between mono text-[12px] font-bold text-white
+                  border-t border-[#232323] pt-3">
+        <span>Total debit</span>
+        <span id="totDisp">₦0.00</span>
+      </div>
+    </div>
+ 
+    <!-- footer -->
+    <div class="flex gap-2.5 px-5 pb-6">
+      <button id="cancelFund"
+              class="flex-1 py-3 rounded-xl bg-[#232323] border border-[#2d2d2d]
+                     text-[#888] text-[13px] font-bold
+                     hover:border-[#888] hover:text-white transition-all">
+        Cancel
+      </button>
+ 
+      <!-- ID "fundBtn" — matches your existing JS exactly -->
+      <button id="fundBtn"
+              class="flex-[2] py-3 rounded-xl bg-[#FFD600] text-black
+                     text-[13px] font-extrabold
+                     flex items-center justify-center gap-2
+                     hover:bg-[#FFE040] hover:-translate-y-0.5
+                     hover:shadow-[0_8px_20px_rgba(255,214,0,.25)]
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     disabled:translate-y-0 transition-all">
+        <span id="fundBtnText">Confirm &amp; Fund</span>
+        <span id="fundBtnSpin"
+              class="hidden w-4 h-4 rounded-full
+                     border-2 border-black/20 border-t-black spin"></span>
+      </button>
+    </div>
+ 
+  </div>
+</div>
+ 
+<!-- ════════════════════════════════
+     COMING SOON MODAL
+════════════════════════════════ -->
+<div id="csModal"
+     class="fixed inset-0 bg-black/80 backdrop-blur-md z-[500]
+            flex items-end sm:items-center justify-center
+            opacity-0 pointer-events-none">
+  <div class="modal-card bg-[#111] border border-[#232323]
+              rounded-t-3xl sm:rounded-3xl w-full max-w-[320px] translate-y-10">
+    <div class="flex flex-col items-center gap-3 px-6 py-8 text-center">
+      <div id="csIcon"
+           class="w-16 h-16 rounded-2xl grid place-items-center text-3xl
+                  bg-[rgba(255,214,0,.07)] border border-[rgba(255,214,0,.12)]"></div>
+      <h3 id="csTitle" class="text-lg font-extrabold"></h3>
+      <p  id="csDesc"  class="mono text-[11px] text-[#888] leading-relaxed"></p>
+      <button id="csClose"
+              class="w-full mt-1 py-3 rounded-xl bg-[#FFD600] text-black
+                     text-[13px] font-extrabold hover:bg-[#FFE040] transition-all">
+        Got it
+      </button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ════════════════════════════════
+     SIDEBAR OVERLAY
+════════════════════════════════ -->
+<div id="sbOverlay"
+     class=" hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[300]"></div>
+ 
+<!-- ════════════════════════════════
+     SIDEBAR — ID "sidebar" matches your existing JS
+════════════════════════════════ -->
+<aside id="sidebar"
+       class=" w-[240px] h-screen bg-#da2020 border-r border-[#232323]
+              flex flex-col fixed top-0 left-0 z-[400] overflow-y-auto">
+ 
+  <!-- close X -->
   
-        <!-- Include Bootstrap JS, Popper.js, and jQuery -->
-        <!-- <script 
-          src="https://code.jquery.com/jquery-3.5.1.slim.min.js">
-        </script>
-        <script 
-          src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js">
-        </script>
-        <script 
-          src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js">
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous">
-    </script>
-   <script src="/client/js/dashboard.js"></script>
+  <button id="sbCloseBtn"
+          class="absolute top-3 right-2.5 w-7 h-7 rounded-lg
+                 bg-[#232323] border border-[#2d2d2d] text-[#888]
+                 grid place-items-center
+                 hover:bg-[#FF3D57] hover:border-[#FF3D57] hover:text-white transition-all">
+    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+ 
+  <!-- logo -->
+  <div class="flex items-center gap-2.5 px-5 pb-5 pt-6
+              border-b border-[#232323] shrink-0">
+    <div class="w-8 h-8 bg-[#FFD600] rounded-lg grid place-items-center shrink-0">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#000"
+           stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+    </div>
+    <span class="text-[16px] font-extrabold tracking-tight">
+      Kamdra<span class="text-[#FFD600]">Pay</span>
+    </span>
+  </div>
+ 
+  <!-- nav -->
+  <nav class="flex-1 py-4 flex flex-col gap-0.5">
+ 
+    <p class="mono text-[9px] tracking-[2px] text-[#555] uppercase px-5 pb-2">Main</p>
+ 
+    <a href="/client/dashboard/index.html"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#FFD600] bg-[rgba(255,214,0,.07)] border-l-[3px] border-[#FFD600]">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+ 
+    <a href="#"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Wallet
+    </a>
+ 
+    <a href="#"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Transactions
+      <span class="ml-auto mono text-[9px] font-bold bg-[#FFD600]
+                   text-black px-1.5 py-0.5 rounded-full">12</span>
+    </a>
+ 
+    <p class="mono text-[9px] tracking-[2px] text-[#555] uppercase px-5 pb-2 pt-4">Services</p>
+ 
+    <a href="/client/dashboard/BuyAirtime.html"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3.05 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 17z"/></svg>
+      Airtime &amp; Data
+    </a>
+  
+    <a href="/client/dashboard/BuyData.html"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+      Data Bundles
+    </a>
+ 
+    <a href="#"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      Cable TV
+    </a>
+ 
+    <a href="#"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Utilities
+    </a>
+ 
+    <a href="#"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      Virtual Numbers
+    </a>
+ 
+    <p class="mono text-[9px] tracking-[2px] text-[#555] uppercase px-5 pb-2 pt-4">Account</p>
+ 
+    <a href="#"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      Profile
+    </a>
+ 
+    <a href="#"
+       class="flex items-center gap-2.5 px-5 py-2.5 text-[13px] font-semibold
+              text-[#888] border-l-[3px] border-transparent
+              hover:text-white hover:bg-[rgba(255,214,0,.07)] transition-all">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 1 0 21 12"/></svg>
+      Settings
+    </a>
+ 
+  </nav>
+ 
+  <!-- user pill -->
+  <div class="flex items-center gap-2.5 px-5 py-4 border-t border-[#232323] shrink-0">
+    <div id="sbAvatar"
+         class="w-8 h-8 rounded-full shrink-0 grid place-items-center
+                font-extrabold text-black text-xs
+                bg-gradient-to-br from-[#FFD600] to-[#ff8c00]">
+      ?
+    </div>
+    <div class="overflow-hidden">
+      <div id="sbUserName" class="text-[13px] font-bold truncate">Loading…</div>
+      <div id="sbUserTag"  class="mono text-[10px] text-[#888] truncate">@—</div>
+    </div>
+    <button id="logoutBtn" title="Sign out"
+            class="ml-auto w-7 h-7 rounded-lg border border-[#2d2d2d]
+                   text-[#888] grid place-items-center
+                   hover:bg-[#FF3D57] hover:border-[#FF3D57] hover:text-white transition-all">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+    </button>
+  </div>
+ 
+</aside>
+ 
+
+
+<!-- ════════════════════════════════
+     MAIN
+════════════════════════════════ -->
+<main class="ml-[240px] flex-1 flex flex-col min-h-screen" id="mainArea">
+ 
+  <!-- Ticker -->
+  <div class="h-9 bg-[#FFD600] text-black overflow-hidden
+              whitespace-nowrap flex items-center shrink-0">
+    <marquee class=" mono text-[10px] font-bold tracking-wide">
+      &nbsp;&nbsp;MTN Data — 1GB @ ₦280 &nbsp;◆&nbsp;
+      Airtel Airtime — 5% Cashback Today &nbsp;◆&nbsp;
+      DSTV Compact @ ₦10,500/mo &nbsp;◆&nbsp;
+      Electricity — Instant Token Delivery &nbsp;◆&nbsp;
+      Virtual Numbers from ₦500 &nbsp;◆&nbsp;
+      Glo 2GB @ ₦400 &nbsp;◆&nbsp;
+      MTN Data — 1GB @ ₦280 &nbsp;◆&nbsp;
+      Airtel Airtime — 5% Cashback Today &nbsp;◆&nbsp;
+      DSTV Compact @ ₦10,500/mo &nbsp;◆&nbsp;
+      Electricity — Instant Token Delivery &nbsp;◆&nbsp;
+      Virtual Numbers from ₦500 &nbsp;◆&nbsp;
+      Glo 2GB @ ₦400 &nbsp;◆&nbsp;
+    </marquee>
+  </div>
+ 
+  <!-- Topbar -->
+  <header class="h-16 flex items-center justify-between px-7
+                 bg-[#111] border-b border-[#232323]
+                 sticky top-0 z-[100] shrink-0 gap-3">
+ 
+    <div class="flex items-center gap-3">
+      <!-- ID "toggle-btn" matches your existing hamburger JS -->
+      <button id="toggle-btn"
+              class="w-9 h-9 rounded-xl bg-[#191919] border border-[#232323]
+                     grid place-items-center shrink-0
+                     hover:border-[#FFD600] transition-all">
+        <svg class="w-4 h-4 text-[#888]" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="text-[17px] font-extrabold">
+        Good <span id="timeOfDay">morning</span>,
+        <span id="greetName">there</span> 👋
+      </div>
+    </div>
+ 
+    <div class="flex items-center gap-2.5">
+      <div class="hidden sm:flex items-center gap-1.5
+                  bg-[rgba(0,230,118,.08)] border border-[rgba(0,230,118,.25)]
+                  rounded-full px-3 py-1.5 mono text-[10px] text-[#00E676]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#00E676] pulse"></span>
+        KYC Verified
+      </div>
+      <button class="relative w-9 h-9 rounded-xl bg-[#191919] border border-[#232323]
+                     grid place-items-center hover:border-[#FFD600] transition-all">
+        <svg class="w-4 h-4 text-[#888]" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#FFD600]
+                     rounded-full border-2 border-[#111]"></span>
+      </button>
+    </div>
+ 
+  </header>
+ 
+  <!-- ════ PAGE CONTENT ════ -->
+  <div class="flex-1 p-7 overflow-y-auto" id="dashContent">
+ 
+    <!-- ═══ WALLET CARD ═══ -->
+    <div class="relative overflow-hidden rounded-[20px] mb-6 card-enter
+                bg-gradient-to-br from-[#161400] via-[#0d0d0d] to-[#111000]
+                border border-[rgba(255,214,0,.2)]
+                shadow-[0_0_0_1px_rgba(255,214,0,.04),0_20px_60px_rgba(0,0,0,.55),inset_0_1px_0_rgba(255,214,0,.12)]">
+      <div class="orb-1"></div>
+      <div class="orb-2"></div>
+ 
+      <div class="relative z-10 p-7">
+ 
+        <!-- card top -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2 mono text-[10px]
+                      tracking-[1.5px] text-[rgba(255,214,0,.55)] uppercase">
+            <span class="w-2 h-2 rounded-full bg-[#FFD600]
+                         shadow-[0_0_7px_#FFD600] pulse"></span>
+            KamPay Wallet
+          </div>
+          <div class="flex gap-2">
+            <button id="eyeBtn"
+                    class="w-8 h-8 rounded-[9px] text-[#888]
+                           bg-[rgba(255,255,255,.04)] border border-[rgba(255,255,255,.07)]
+                           grid place-items-center
+                           hover:bg-[rgba(255,214,0,.07)]
+                           hover:border-[rgba(255,214,0,.3)]
+                           hover:text-[#FFD600] transition-all">
+              <svg id="eyeIco" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+            <button id="refreshBtn"
+                    class="w-8 h-8 rounded-[9px] text-[#888]
+                           bg-[rgba(255,255,255,.04)] border border-[rgba(255,255,255,.07)]
+                           grid place-items-center
+                           hover:bg-[rgba(255,214,0,.07)]
+                           hover:border-[rgba(255,214,0,.3)]
+                           hover:text-[#FFD600] transition-all">
+              <svg id="refreshIco" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+ 
+        <!-- balance display -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="mono text-[10px] tracking-wider text-[#888] uppercase">
+              Available Balance
+            </span>
+            <span class="flex items-center gap-1.5 mono text-[10px] text-[#00E676]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#00E676] pulse"></span>
+              Live
+            </span>
+          </div>
+          <div class="flex items-start gap-1 leading-none mb-2">
+            <span class="text-[22px] font-extrabold text-[rgba(255,214,0,.6)] mt-1.5">₦</span>
+            <!--
+              ID "balance" —  existing JS writes to this element.
+              We start with a skeleton; JS replaces it with the real value.
+            -->
+            <span id="balance"
+                  class="text-[48px] font-extrabold tracking-[-2px]
+                         text-[#FFD600] leading-none min-w-[160px]">
+              <span class="sk-bar"></span>
+            </span>
+          </div>
+          <div id="balMeta" class="mono text-[10px] text-[#555] min-h-[14px]">
+            Fetching balance…
+          </div>
+        </div>
+ 
+        <!-- divider -->
+        <div class="h-px mb-5
+                    bg-gradient-to-r from-transparent
+                    via-[rgba(255,214,0,.2)] to-transparent"></div>
+ 
+        <!-- action buttons -->
+        <div class="grid grid-cols-3 gap-2.5">
+ 
+          <!-- Fund — opens the modal -->
+          <button id="openFundModal"
+                  class="flex flex-col items-center gap-2 py-3.5 px-2 rounded-[13px]
+                         bg-[#FFD600] text-black text-[12px] font-extrabold
+                         shadow-[0_8px_22px_rgba(255,214,0,.22)]
+                         hover:bg-[#FFE040] hover:-translate-y-1
+                         hover:shadow-[0_12px_30px_rgba(255,214,0,.32)] transition-all">
+            <span class="w-9 h-9 rounded-[10px] bg-black/10 grid place-items-center">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </span>
+            Fund
+          </button>
+ 
+          <!-- Withdraw — coming soon -->
+          <button id="withdrawBtn"
+                  class="flex flex-col items-center gap-2 py-3.5 px-2 rounded-[13px]
+                         bg-[rgba(255,255,255,.04)] text-white text-[12px] font-bold
+                         border border-[rgba(255,255,255,.07)]
+                         hover:bg-[rgba(255,214,0,.06)]
+                         hover:border-[rgba(255,214,0,.22)]
+                         hover:text-[#FFD600] hover:-translate-y-1 transition-all">
+            <span class="w-9 h-9 rounded-[10px] bg-[rgba(255,214,0,.08)]
+                         text-[#FFD600] grid place-items-center">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"/>
+                <polyline points="5 12 12 5 19 12"/>
+              </svg>
+            </span>
+            Withdraw
+          </button>
+ 
+          <!-- Transfer — coming soon -->
+          <button id="transferBtn"
+                  class="flex flex-col items-center gap-2 py-3.5 px-2 rounded-[13px]
+                         bg-[rgba(255,255,255,.04)] text-white text-[12px] font-bold
+                         border border-[rgba(255,255,255,.07)]
+                         hover:bg-[rgba(255,214,0,.06)]
+                         hover:border-[rgba(255,214,0,.22)]
+                         hover:text-[#FFD600] hover:-translate-y-1 transition-all">
+            <span class="w-9 h-9 rounded-[10px] bg-[rgba(255,214,0,.08)]
+                         text-[#FFD600] grid place-items-center">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </span>
+            Transfer
+          </button>
+ 
+        </div>
+      </div>
+    </div>
+ 
+    <!-- ═══ STATS ═══ -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-6">
+      <div class="bg-[#111] border border-[#232323] rounded-[18px] p-4 card-enter
+                  hover:border-[rgba(255,214,0,.25)] hover:-translate-y-0.5 transition-all">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-9 h-9 rounded-[10px] bg-[rgba(255,214,0,.07)]
+                      border border-[rgba(255,214,0,.12)] grid place-items-center">
+            <svg class="w-4 h-4 text-[#FFD600]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3.05 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 17z"/></svg>
+          </div>
+          <span class="mono text-[10px] px-2 py-0.5 rounded-full bg-[rgba(0,230,118,.1)] text-[#00E676]">+8%</span>
+        </div>
+        <div class="text-[22px] font-extrabold mb-0.5">₦12,400</div>
+        <div class="mono text-[10px] text-[#888]">Airtime Spent</div>
+      </div>
+ 
+      <div class="bg-[#111] border border-[#232323] rounded-[18px] p-4 card-enter
+                  hover:border-[rgba(255,214,0,.25)] hover:-translate-y-0.5 transition-all">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-9 h-9 rounded-[10px] bg-[rgba(255,214,0,.07)]
+                      border border-[rgba(255,214,0,.12)] grid place-items-center">
+            <svg class="w-4 h-4 text-[#FFD600]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          </div>
+          <span class="mono text-[10px] px-2 py-0.5 rounded-full bg-[rgba(0,230,118,.1)] text-[#00E676]">+14%</span>
+        </div>
+        <div class="text-[22px] font-extrabold mb-0.5">₦8,750</div>
+        <div class="mono text-[10px] text-[#888]">Data Purchased</div>
+      </div>
+ 
+      <div class="bg-[#111] border border-[#232323] rounded-[18px] p-4 card-enter
+                  hover:border-[rgba(255,214,0,.25)] hover:-translate-y-0.5 transition-all">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-9 h-9 rounded-[10px] bg-[rgba(255,214,0,.07)]
+                      border border-[rgba(255,214,0,.12)] grid place-items-center">
+            <svg class="w-4 h-4 text-[#FFD600]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <span class="mono text-[10px] px-2 py-0.5 rounded-full bg-[rgba(255,61,87,.1)] text-[#FF3D57]">-2%</span>
+        </div>
+        <div class="text-[22px] font-extrabold mb-0.5">2</div>
+        <div class="mono text-[10px] text-[#888]">Cable Subs</div>
+      </div>
+ 
+      <div class="bg-[#111] border border-[#232323] rounded-[18px] p-4 card-enter
+                  hover:border-[rgba(255,214,0,.25)] hover:-translate-y-0.5 transition-all">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-9 h-9 rounded-[10px] bg-[rgba(255,214,0,.07)]
+                      border border-[rgba(255,214,0,.12)] grid place-items-center">
+            <svg class="w-4 h-4 text-[#FFD600]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <span class="mono text-[10px] px-2 py-0.5 rounded-full bg-[rgba(0,230,118,.1)] text-[#00E676]">+22%</span>
+        </div>
+        <div class="text-[22px] font-extrabold mb-0.5">₦5,200</div>
+        <div class="mono text-[10px] text-[#888]">Utility Bills</div>
+      </div>
+    </div>
+ 
+    <!-- ═══ BOTTOM GRID ═══ -->
+    <div class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-4">
+ 
+      <!-- Transactions -->
+      <div class="bg-[#111] border border-[#232323] rounded-[18px] overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-[#232323]">
+          <span class="text-[14px] font-extrabold">Recent Transactions</span>
+          <button class="mono text-[10px] text-[#FFD600] hover:opacity-70 transition-all">SEE ALL →</button>
+        </div>
+        <div id="txList">
+          <!-- Phase 4 will make these dynamic. Static for now. -->
+          <div class="flex items-center gap-3 px-5 py-3.5 border-b border-[#232323] hover:bg-[rgba(255,214,0,.04)] cursor-pointer transition-all">
+            <div class="w-10 h-10 rounded-xl bg-[rgba(0,230,118,.1)] grid place-items-center shrink-0"><svg class="w-4 h-4 text-[#00E676]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+            <div class="flex-1 overflow-hidden"><div class="text-[13px] font-bold mb-0.5">Wallet Funded</div><div class="mono text-[10px] text-[#888]">GTBank Transfer</div></div>
+            <div class="text-right shrink-0"><div class="text-[13px] font-extrabold text-[#00E676]">+₦10,000</div><div class="mono text-[10px] text-[#555] mt-0.5">11:03 AM</div></div>
+          </div>
+          <div class="flex items-center gap-3 px-5 py-3.5 border-b border-[#232323] hover:bg-[rgba(255,214,0,.04)] cursor-pointer transition-all">
+            <div class="w-10 h-10 rounded-xl bg-[rgba(255,214,0,.1)] grid place-items-center shrink-0"><svg class="w-4 h-4 text-[#FFD600]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12"/></svg></div>
+            <div class="flex-1 overflow-hidden"><div class="text-[13px] font-bold mb-0.5">MTN Airtime</div><div class="mono text-[10px] text-[#888]">08023456789 · Instant</div></div>
+            <div class="text-right shrink-0"><div class="text-[13px] font-extrabold text-[#FF3D57]">-₦1,000</div><div class="mono text-[10px] text-[#555] mt-0.5">2:14 PM</div></div>
+          </div>
+          <div class="flex items-center gap-3 px-5 py-3.5 border-b border-[#232323] hover:bg-[rgba(255,214,0,.04)] cursor-pointer transition-all">
+            <div class="w-10 h-10 rounded-xl bg-[rgba(0,230,118,.1)] grid place-items-center shrink-0"><svg class="w-4 h-4 text-[#00E676]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div>
+            <div class="flex-1 overflow-hidden"><div class="text-[13px] font-bold mb-0.5">Airtel 3GB Data</div><div class="mono text-[10px] text-[#888]">08112345678 · 30 days</div></div>
+            <div class="text-right shrink-0"><div class="text-[13px] font-extrabold text-[#FF3D57]">-₦1,500</div><div class="mono text-[10px] text-[#555] mt-0.5">Yesterday</div></div>
+          </div>
+          <div class="flex items-center gap-3 px-5 py-3.5 border-b border-[#232323] hover:bg-[rgba(255,214,0,.04)] cursor-pointer transition-all">
+            <div class="w-10 h-10 rounded-xl bg-[rgba(129,140,248,.12)] grid place-items-center shrink-0"><svg class="w-4 h-4 text-[#818cf8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+            <div class="flex-1 overflow-hidden"><div class="text-[13px] font-bold mb-0.5">DSTV Compact</div><div class="mono text-[10px] text-[#888]">IUC: 1234567890</div></div>
+            <div class="text-right shrink-0"><div class="text-[13px] font-extrabold text-[#FF3D57]">-₦10,500</div><div class="mono text-[10px] text-[#555] mt-0.5">Yesterday</div></div>
+          </div>
+          <div class="flex items-center gap-3 px-5 py-3.5 hover:bg-[rgba(255,214,0,.04)] cursor-pointer transition-all">
+            <div class="w-10 h-10 rounded-xl bg-[rgba(251,146,60,.12)] grid place-items-center shrink-0"><svg class="w-4 h-4 text-[#fb923c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+            <div class="flex-1 overflow-hidden"><div class="text-[13px] font-bold mb-0.5">EKEDC Electricity</div><div class="mono text-[10px] text-[#888]">Meter: 45210981034</div></div>
+            <div class="text-right shrink-0"><div class="text-[13px] font-extrabold text-[#FF3D57]">-₦5,000</div><div class="mono text-[10px] text-[#555] mt-0.5">May 1</div></div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Right column -->
+      <div class="flex flex-col gap-4">
+ 
+        <!-- Quick Buy -->
+        <div class="bg-[#111] border border-[#232323] rounded-[18px] overflow-hidden">
+          <div class="px-5 py-4 border-b border-[#232323]">
+            <span class="text-[14px] font-extrabold">Quick Buy</span>
+          </div>
+          <div class="grid grid-cols-2 gap-px bg-[#232323]">
+            <div class="bg-[#111] flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-[rgba(255,214,0,.04)] transition-all">
+              <div class="w-11 h-11 rounded-[13px] bg-[rgba(255,214,0,.1)] grid place-items-center"><svg class="w-5 h-5 text-[#FFD600]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3.05 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 17z"/></svg></div>
+              <div class="text-[12px] font-bold">Airtime</div>
+              <div class="mono text-[10px] text-[#888]">All networks</div>
+            </div>
+            <div class="bg-[#111] flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-[rgba(255,214,0,.04)] transition-all">
+              <div class="w-11 h-11 rounded-[13px] bg-[rgba(0,230,118,.1)] grid place-items-center"><svg class="w-5 h-5 text-[#00E676]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div>
+              <div class="text-[12px] font-bold">Data</div>
+              <div class="mono text-[10px] text-[#888]">From ₦180</div>
+            </div>
+            <div class="bg-[#111] flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-[rgba(255,214,0,.04)] transition-all">
+              <div class="w-11 h-11 rounded-[13px] bg-[rgba(129,140,248,.12)] grid place-items-center"><svg class="w-5 h-5 text-[#818cf8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+              <div class="text-[12px] font-bold">Cable TV</div>
+              <div class="mono text-[10px] text-[#888]">DSTV · GOtv</div>
+            </div>
+            <div class="bg-[#111] flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-[rgba(255,214,0,.04)] transition-all">
+              <div class="w-11 h-11 rounded-[13px] bg-[rgba(251,146,60,.12)] grid place-items-center"><svg class="w-5 h-5 text-[#fb923c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+              <div class="text-[12px] font-bold">Electricity</div>
+              <div class="mono text-[10px] text-[#888]">Prepaid token</div>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Virtual Number -->
+        <div class="relative overflow-hidden rounded-[18px] p-5
+                    bg-gradient-to-br from-[#191919] to-[#1a1600]
+                    border border-[rgba(255,214,0,.18)]">
+          <div class="absolute top-[-40px] right-[-40px] w-36 h-36 rounded-full pointer-events-none
+                      bg-[radial-gradient(circle,rgba(255,214,0,.08),transparent_70%)]"></div>
+          <div class="flex items-center justify-between mb-3 relative z-10">
+            <span class="text-[13px] font-extrabold">Virtual Number</span>
+            <span class="mono text-[9px] bg-[rgba(255,214,0,.1)]
+                         border border-[rgba(255,214,0,.25)]
+                         text-[#FFD600] px-2 py-0.5 rounded-full">ACTIVE</span>
+          </div>
+          <div class="mono text-[19px] font-bold text-[#FFD600]
+                      tracking-[1.5px] mb-1.5 relative z-10">
+            +1 (424) 930-7741
+          </div>
+          <div class="mono text-[10px] text-[#888] mb-4 relative z-10">
+            US · SMS-Activate · Expires in 18h 44m
+          </div>
+          <div class="flex gap-2 relative z-10">
+            <button class="flex-1 py-2 rounded-[10px] bg-[#FFD600] text-black
+                           text-[12px] font-extrabold hover:bg-[#FFE040] transition-all">
+              Get New
+            </button>
+            <button class="flex-1 py-2 rounded-[10px] bg-[#232323] text-white
+                           text-[12px] font-bold border border-[#2d2d2d]
+                           hover:border-[#FFD600] hover:text-[#FFD600] transition-all">
+              Copy
+            </button>
+          </div>
+        </div>
+ 
+      </div>
+    </div><!-- /bottom grid -->
+ 
+  </div><!-- /content -->
+</main>
+ 
+<script src="../js/dashboard.js"></script>
 </body>
 </html>
+ 
